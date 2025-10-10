@@ -1,36 +1,39 @@
 services:
-  # PostgreSQL 17 database service for production
+  # PostgreSQL 17 database service for development
   postgres:
     image: postgres:17
-    container_name: blog-postgres
+    container_name: blog-postgres-dev
     environment:
-      POSTGRES_DB: blog_prod
+      POSTGRES_DB: blog_dev
       POSTGRES_USER: blog_user
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-blog_secure_password}
+      POSTGRES_PASSWORD: blog_password
       PGDATA: /var/lib/postgresql/data/pgdata
+      TZ: UTC
+      PGTZ: UTC
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - blog-network
+    command: ["postgres", "-c", "timezone=UTC", "-c", "log_timezone=UTC"]
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U blog_user -d blog_prod"]
+      test: ["CMD-SHELL", "pg_isready -U blog_user -d blog_dev"]
       interval: 10s
       timeout: 5s
       retries: 5
     restart: unless-stopped
 
-  # Database migration service
+  # Database migration service for development
   migrate:
     build:
       context: .
       dockerfile: backend/Dockerfile
-      target: production
-    container_name: blog-migrate
+      target: development
+    container_name: blog-migrate-dev
     environment:
-      NODE_ENV: production
-      DATABASE_URL: postgresql://blog_user:${POSTGRES_PASSWORD:-blog_secure_password}@postgres:5432/blog_prod
+      NODE_ENV: development
+      DATABASE_URL: postgresql://blog_user:blog_password@postgres:5432/blog_dev
     working_dir: /app/backend
     command: ["pnpm", "prisma", "migrate", "deploy"]
     depends_on:
@@ -38,23 +41,27 @@ services:
         condition: service_healthy
     networks:
       - blog-network
+    volumes:
+      - ./backend:/app/backend
+      - backend_node_modules:/app/backend/node_modules
     restart: "no"
 
-  # Backend service
+  # Backend service for development
   backend:
     build:
       context: .
       dockerfile: backend/Dockerfile
-      target: production
-    container_name: blog-backend
+      target: development
+    container_name: blog-backend-dev
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
       PORT: 3000
-      DATABASE_URL: postgresql://blog_user:${POSTGRES_PASSWORD:-blog_secure_password}@postgres:5432/blog_prod
-      JWT_SECRET: ${JWT_SECRET:-please-change-this-jwt-secret-in-production}
-      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost}
+      DATABASE_URL: postgresql://blog_user:blog_password@postgres:5432/blog_dev
+      JWT_SECRET: dev-jwt-secret-key-that-is-long-enough-for-production-use-32-chars
+      CORS_ORIGIN: http://localhost:5173
     ports:
       - "3000:3000"
+      - "5555:5555"
     depends_on:
       postgres:
         condition: service_healthy
@@ -63,56 +70,42 @@ services:
     networks:
       - blog-network
     volumes:
+      - ./backend:/app/backend
+      - backend_node_modules:/app/backend/node_modules
       - ./backend/uploads:/app/backend/uploads
     restart: unless-stopped
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
-  # Frontend service
+  # Frontend service for development
   frontend:
     build:
       context: .
       dockerfile: frontend/Dockerfile
-      target: production
-    container_name: blog-frontend
+      target: development
+    container_name: blog-frontend-dev
     environment:
-      VITE_API_URL: ${VITE_API_URL:-http://localhost/api}
+      VITE_API_URL: http://localhost:3000
     ports:
-      - "80:80"
+      - "5173:5173"
     depends_on:
       - backend
     networks:
       - blog-network
+    volumes:
+      - ./frontend:/app/frontend
+      - frontend_node_modules:/app/frontend/node_modules
     restart: unless-stopped
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "wget --no-verbose --tries=1 --spider http://localhost/ || exit 1",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
-  # pgAdmin service for database management
+  # pgAdmin service for database management (development)
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: blog-pgadmin
+    container_name: blog-pgadmin-dev
     environment:
       PGADMIN_DEFAULT_EMAIL: "admin@example.com"
-      PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_PASSWORD:-admin}"
-      PGADMIN_CONFIG_SERVER_MODE: "True"
-      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "True"
-      PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 20
+      PGADMIN_DEFAULT_PASSWORD: "admin"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
     ports:
-      - "8080:80" # Allow access from any IP on the network
+      - "8080:80"
     depends_on:
       postgres:
         condition: service_healthy
@@ -128,6 +121,10 @@ networks:
 
 volumes:
   postgres_data:
+    driver: local
+  frontend_node_modules:
+    driver: local
+  backend_node_modules:
     driver: local
   pgadmin_data:
     driver: local
