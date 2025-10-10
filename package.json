@@ -1,0 +1,25 @@
+{
+  "name": "blog-app",
+  "version": "1.0.0",
+  "description": "A modern blog application with Express.js backend and React frontend",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter blog-backend dev\" \"pnpm --filter blog-frontend dev\"",
+    "build": "pnpm --filter blog-backend build && pnpm --filter blog-frontend build",
+    "test": "pnpm --filter blog-backend test && pnpm --filter blog-frontend test",
+    "lint": "pnpm --filter blog-backend lint && pnpm --filter blog-frontend lint",
+    "type-check": "pnpm --filter blog-backend type-check && pnpm --filter blog-frontend type-check"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0"
+}

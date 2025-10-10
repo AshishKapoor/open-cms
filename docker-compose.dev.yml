@@ -1,0 +1,130 @@
+services:
+  # PostgreSQL 17 database service for development
+  postgres:
+    image: postgres:17
+    container_name: blog-postgres-dev
+    environment:
+      POSTGRES_DB: blog_dev
+      POSTGRES_USER: blog_user
+      POSTGRES_PASSWORD: blog_password
+      PGDATA: /var/lib/postgresql/data/pgdata
+      TZ: UTC
+      PGTZ: UTC
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - blog-network
+    command: ["postgres", "-c", "timezone=UTC", "-c", "log_timezone=UTC"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U blog_user -d blog_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Database migration service for development
+  migrate:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: development
+    container_name: blog-migrate-dev
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://blog_user:blog_password@postgres:5432/blog_dev
+    working_dir: /app/backend
+    command: ["pnpm", "prisma", "migrate", "deploy"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - blog-network
+    volumes:
+      - ./backend:/app/backend
+      - backend_node_modules:/app/backend/node_modules
+    restart: "no"
+
+  # Backend service for development
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: development
+    container_name: blog-backend-dev
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: postgresql://blog_user:blog_password@postgres:5432/blog_dev
+      JWT_SECRET: dev-jwt-secret-key-that-is-long-enough-for-production-use-32-chars
+      CORS_ORIGIN: http://localhost:5173
+    ports:
+      - "3000:3000"
+      - "5555:5555"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - blog-network
+    volumes:
+      - ./backend:/app/backend
+      - backend_node_modules:/app/backend/node_modules
+      - ./backend/uploads:/app/backend/uploads
+    restart: unless-stopped
+
+  # Frontend service for development
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      target: development
+    container_name: blog-frontend-dev
+    environment:
+      VITE_API_URL: http://localhost:3000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - blog-network
+    volumes:
+      - ./frontend:/app/frontend
+      - frontend_node_modules:/app/frontend/node_modules
+    restart: unless-stopped
+
+  # pgAdmin service for database management (development)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: blog-pgadmin-dev
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@example.com"
+      PGADMIN_DEFAULT_PASSWORD: "admin"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    ports:
+      - "8080:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - blog-network
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    restart: unless-stopped
+
+networks:
+  blog-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  frontend_node_modules:
+    driver: local
+  backend_node_modules:
+    driver: local
+  pgadmin_data:
+    driver: local
