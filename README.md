@@ -7,7 +7,8 @@ A modern, full-stack blog application built with industry best practices and ope
 [![React](https://img.shields.io/badge/React-18-blue.svg)](https://reactjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 
-<img width="1691" height="1241" alt="Screenshot 2025-09-21 at 10 40 31 PM" src="https://github.com/user-attachments/assets/cf20fa48-a4f2-4cc2-8485-5dba41dcb940" />
+<img width="1912" height="1174" alt="Screenshot 2025-10-11 at 10 50 07 AM" src="https://github.com/user-attachments/assets/1961c114-6b1c-48b2-a50b-11fba78403e3" />
+<img width="1912" height="1174" alt="Screenshot 2025-10-11 at 10 49 19 AM" src="https://github.com/user-attachments/assets/1409a72e-98ed-4b82-bdbe-193775a95440" />
 
 > **Note**: This is an open-source project. Feel free to use, modify, and contribute!
 
