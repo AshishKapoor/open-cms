@@ -40,16 +40,6 @@ const reorderSchema = z.object({
   ),
 });
 
-// Helper function to generate slug from title
-const generateSlug = (title: string): string => {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9 -]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim();
-};
-
 // PRODUCTS CONTROLLERS
 
 export const getAllProducts = async (
@@ -299,9 +289,19 @@ export const updateSection = async (
     const { productId, sectionId } = req.params;
     const validatedData = updateSectionSchema.parse(req.body);
 
-    // Check if slug is being changed and if new slug already exists
-    if (validatedData.slug) {
-      const existingSection = await db.documentationSection.findFirst({
+    // Verify section belongs to this product
+    const existingSection = await db.documentationSection.findFirst({
+      where: { id: sectionId, productId },
+    });
+
+    if (!existingSection) {
+      res.status(404).json({ error: 'Section not found in this product' });
+      return;
+    }
+
+    // Check slug uniqueness if being changed
+    if (validatedData.slug && validatedData.slug !== existingSection.slug) {
+      const duplicateSlug = await db.documentationSection.findFirst({
         where: {
           productId,
           slug: validatedData.slug,
@@ -309,7 +309,7 @@ export const updateSection = async (
         },
       });
 
-      if (existingSection) {
+      if (duplicateSlug) {
         res.status(400).json({
           error: 'A section with this slug already exists in this product',
         });
@@ -339,7 +339,17 @@ export const deleteSection = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { sectionId } = req.params;
+    const { productId, sectionId } = req.params;
+
+    // Verify section belongs to this product
+    const section = await db.documentationSection.findFirst({
+      where: { id: sectionId, productId },
+    });
+
+    if (!section) {
+      res.status(404).json({ error: 'Section not found in this product' });
+      return;
+    }
 
     await db.documentationSection.delete({
       where: { id: sectionId },
@@ -362,13 +372,15 @@ export const reorderSections = async (
     const { productId } = req.params;
     const validatedData = reorderSchema.parse(req.body);
 
-    // Update all sections with new positions
-    for (const item of validatedData.items) {
-      await db.documentationSection.update({
-        where: { id: item.id },
-        data: { sidebarPosition: item.sidebarPosition },
-      });
-    }
+    // Update all sections with new positions in a single transaction
+    await db.$transaction(
+      validatedData.items.map((item) =>
+        db.documentationSection.update({
+          where: { id: item.id },
+          data: { sidebarPosition: item.sidebarPosition },
+        })
+      )
+    );
 
     const sections = await db.documentationSection.findMany({
       where: { productId },
@@ -501,8 +513,36 @@ export const updatePage = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { pageId } = req.params;
+    const { sectionId, pageId } = req.params;
     const validatedData = updatePageSchema.parse(req.body);
+
+    // Verify page belongs to this section
+    const existingPage = await db.documentationPage.findFirst({
+      where: { id: pageId, sectionId },
+    });
+
+    if (!existingPage) {
+      res.status(404).json({ error: 'Page not found in this section' });
+      return;
+    }
+
+    // Check slug uniqueness if being changed
+    if (validatedData.slug && validatedData.slug !== existingPage.slug) {
+      const duplicateSlug = await db.documentationPage.findFirst({
+        where: {
+          sectionId,
+          slug: validatedData.slug,
+          id: { not: pageId },
+        },
+      });
+
+      if (duplicateSlug) {
+        res.status(400).json({
+          error: 'A page with this slug already exists in this section',
+        });
+        return;
+      }
+    }
 
     const page = await db.documentationPage.update({
       where: { id: pageId },
@@ -523,7 +563,17 @@ export const deletePage = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { pageId } = req.params;
+    const { sectionId, pageId } = req.params;
+
+    // Verify page belongs to this section
+    const page = await db.documentationPage.findFirst({
+      where: { id: pageId, sectionId },
+    });
+
+    if (!page) {
+      res.status(404).json({ error: 'Page not found in this section' });
+      return;
+    }
 
     await db.documentationPage.delete({
       where: { id: pageId },
@@ -546,13 +596,15 @@ export const reorderPages = async (
     const { sectionId } = req.params;
     const validatedData = reorderSchema.parse(req.body);
 
-    // Update all pages with new positions
-    for (const item of validatedData.items) {
-      await db.documentationPage.update({
-        where: { id: item.id },
-        data: { sidebarPosition: item.sidebarPosition },
-      });
-    }
+    // Update all pages with new positions (batched in a transaction)
+    await db.$transaction(
+      validatedData.items.map((item) =>
+        db.documentationPage.update({
+          where: { id: item.id },
+          data: { sidebarPosition: item.sidebarPosition },
+        })
+      )
+    );
 
     const pages = await db.documentationPage.findMany({
       where: { sectionId },

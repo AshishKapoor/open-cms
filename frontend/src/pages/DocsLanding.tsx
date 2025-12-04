@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { documentationAPI } from "../services/api";
 import { BookOpen } from "lucide-react";
+import type { DocumentationProduct } from "../types";
 
 const DocsLanding: React.FC = () => {
   const { data, isLoading } = useQuery({
@@ -40,7 +41,7 @@ const DocsLanding: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {products.map((product: any) => (
+            {products.map((product: DocumentationProduct) => (
               <Link
                 key={product.id}
                 to={`/docs/${product.slug}`}

@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import TipTapEditor from "../components/TipTapEditor";
+import type { DocumentationSection, DocumentationPage } from "../types";
 
 const DocumentationEditor: React.FC = () => {
   const { productId } = useParams();
@@ -242,7 +243,7 @@ const DocumentationEditor: React.FC = () => {
               )}
 
               <div className="space-y-2">
-                {sections.map((section: any) => (
+                {sections.map((section: DocumentationSection) => (
                   <div key={section.id}>
                     <button
                       onClick={() => toggleSection(section.id)}
@@ -269,7 +270,7 @@ const DocumentationEditor: React.FC = () => {
 
                     {expandedSections.has(section.id) && (
                       <div className="ml-4 space-y-1">
-                        {section.pages?.map((page: any) => (
+                        {section.pages?.map((page: DocumentationPage) => (
                           <button
                             key={page.id}
                             onClick={() => handleEditPage(section, page)}
