@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { documentationAPI } from "../services/api";
 import { ChevronRight, ChevronLeft, Menu } from "lucide-react";
+import DOMPurify from "dompurify";
+import type { DocumentationSection, DocumentationPage } from "../types";
 
 const DocumentationViewer: React.FC = () => {
   const { productSlug, pageSlug } = useParams();
@@ -21,26 +23,27 @@ const DocumentationViewer: React.FC = () => {
   const sections = product?.sections || [];
 
   // Find the current page
-  let currentPage = null;
-  let currentSection = null;
+  let currentPage: DocumentationPage | null = null;
+  let currentSection: DocumentationSection | null = null;
 
   if (sections && pageSlug) {
     for (const section of sections) {
-      const page = section.pages?.find((p: any) => p.slug === pageSlug);
+      const page = section.pages?.find((p: DocumentationPage) => p.slug === pageSlug);
       if (page) {
         currentPage = page;
         currentSection = section;
         break;
       }
     }
-  } else if (sections.length > 0 && sections[0].pages?.length > 0) {
+  } else if (sections.length > 0 && sections[0].pages && sections[0].pages.length > 0) {
     // Default to first page if none selected
     currentPage = sections[0].pages[0];
     currentSection = sections[0];
   }
 
   useEffect(() => {
-    if (currentPage && pageSlug !== currentPage.slug) {
+    // Only navigate if we have a currentPage but no pageSlug in URL
+    if (currentPage && !pageSlug) {
       navigate(`/docs/${productSlug}/${currentPage.slug}`, { replace: true });
     }
   }, [currentPage, pageSlug, productSlug, navigate]);
@@ -77,13 +80,13 @@ const DocumentationViewer: React.FC = () => {
           </p>
 
           <nav className="space-y-1">
-            {sections.map((section: any) => (
+            {sections.map((section: DocumentationSection) => (
               <div key={section.id}>
                 <div className="px-3 py-2 text-sm font-semibold text-gray-900">
                   {section.title}
                 </div>
                 <div className="space-y-1">
-                  {section.pages?.map((page: any) => (
+                  {section.pages?.map((page: DocumentationPage) => (
                     <button
                       key={page.id}
                       onClick={() => {
@@ -139,7 +142,19 @@ const DocumentationViewer: React.FC = () => {
             <div className="max-w-4xl mx-auto p-8">
               <div
                 className="prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: currentPage.content }}
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(currentPage.content, {
+                    ALLOWED_TAGS: [
+                      'p', 'br', 'strong', 'em', 'b', 'i', 'u', 's',
+                      'ul', 'ol', 'li',
+                      'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+                      'code', 'pre', 'blockquote',
+                      'a', 'img', 'table', 'thead', 'tbody', 'tr', 'th', 'td',
+                      'div', 'span', 'hr', 'sub', 'sup'
+                    ],
+                    ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel'],
+                  })
+                }}
               />
             </div>
           ) : (

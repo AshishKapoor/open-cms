@@ -16,6 +16,18 @@ import type {
   PostsByTagResponse,
   CreateTagData,
   UpdateTagData,
+  DocumentationProductsResponse,
+  DocumentationProductResponse,
+  DocumentationSectionsResponse,
+  DocumentationSectionResponse,
+  DocumentationPagesResponse,
+  DocumentationPageResponse,
+  CreateDocumentationProductData,
+  UpdateDocumentationProductData,
+  CreateDocumentationSectionData,
+  UpdateDocumentationSectionData,
+  CreateDocumentationPageData,
+  UpdateDocumentationPageData,
 } from "../types";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "https://blog.sannty.in";
@@ -288,43 +300,40 @@ export const uploadAPI = {
 // Documentation API
 export const documentationAPI = {
   // Products
-  getAllProducts: async (): Promise<{
-    success: boolean;
-    data: { products: any[] };
-  }> => {
+  getAllProducts: async (): Promise<DocumentationProductsResponse> => {
     const response = await api.get("/api/documentation/products");
     return response.data;
   },
 
-  getProductBySlug: async (slug: string): Promise<any> => {
+  getProductBySlug: async (slug: string): Promise<DocumentationProductResponse> => {
     const response = await api.get(`/api/documentation/products/${slug}`);
     return response.data;
   },
 
-  createProduct: async (data: any): Promise<any> => {
+  createProduct: async (data: CreateDocumentationProductData): Promise<DocumentationProductResponse> => {
     const response = await api.post("/api/documentation/products", data);
     return response.data;
   },
 
-  updateProduct: async (id: string, data: any): Promise<any> => {
+  updateProduct: async (id: string, data: UpdateDocumentationProductData): Promise<DocumentationProductResponse> => {
     const response = await api.put(`/api/documentation/products/${id}`, data);
     return response.data;
   },
 
-  deleteProduct: async (id: string): Promise<any> => {
+  deleteProduct: async (id: string): Promise<{ success: boolean; message: string }> => {
     const response = await api.delete(`/api/documentation/products/${id}`);
     return response.data;
   },
 
   // Sections
-  getSectionsByProduct: async (productId: string): Promise<any> => {
+  getSectionsByProduct: async (productId: string): Promise<DocumentationSectionsResponse> => {
     const response = await api.get(
       `/api/documentation/products/${productId}/sections`
     );
     return response.data;
   },
 
-  createSection: async (productId: string, data: any): Promise<any> => {
+  createSection: async (productId: string, data: CreateDocumentationSectionData): Promise<DocumentationSectionResponse> => {
     const response = await api.post(
       `/api/documentation/products/${productId}/sections`,
       data
@@ -335,8 +344,8 @@ export const documentationAPI = {
   updateSection: async (
     productId: string,
     sectionId: string,
-    data: any
-  ): Promise<any> => {
+    data: UpdateDocumentationSectionData
+  ): Promise<DocumentationSectionResponse> => {
     const response = await api.put(
       `/api/documentation/products/${productId}/sections/${sectionId}`,
       data
@@ -344,14 +353,14 @@ export const documentationAPI = {
     return response.data;
   },
 
-  deleteSection: async (productId: string, sectionId: string): Promise<any> => {
+  deleteSection: async (productId: string, sectionId: string): Promise<{ success: boolean; message: string }> => {
     const response = await api.delete(
       `/api/documentation/products/${productId}/sections/${sectionId}`
     );
     return response.data;
   },
 
-  reorderSections: async (productId: string, items: any[]): Promise<any> => {
+  reorderSections: async (productId: string, items: Array<{ id: string; sidebarPosition: number }>): Promise<DocumentationSectionsResponse> => {
     const response = await api.post(
       `/api/documentation/products/${productId}/sections/reorder`,
       { items }
@@ -360,21 +369,21 @@ export const documentationAPI = {
   },
 
   // Pages
-  getPagesBySection: async (sectionId: string): Promise<any> => {
+  getPagesBySection: async (sectionId: string): Promise<DocumentationPagesResponse> => {
     const response = await api.get(
       `/api/documentation/sections/${sectionId}/pages`
     );
     return response.data;
   },
 
-  getPageBySlug: async (sectionId: string, slug: string): Promise<any> => {
+  getPageBySlug: async (sectionId: string, slug: string): Promise<DocumentationPageResponse> => {
     const response = await api.get(
       `/api/documentation/sections/${sectionId}/pages/${slug}`
     );
     return response.data;
   },
 
-  createPage: async (sectionId: string, data: any): Promise<any> => {
+  createPage: async (sectionId: string, data: CreateDocumentationPageData): Promise<DocumentationPageResponse> => {
     const response = await api.post(
       `/api/documentation/sections/${sectionId}/pages`,
       data
@@ -385,8 +394,8 @@ export const documentationAPI = {
   updatePage: async (
     sectionId: string,
     pageId: string,
-    data: any
-  ): Promise<any> => {
+    data: UpdateDocumentationPageData
+  ): Promise<DocumentationPageResponse> => {
     const response = await api.put(
       `/api/documentation/sections/${sectionId}/pages/${pageId}`,
       data
@@ -394,14 +403,14 @@ export const documentationAPI = {
     return response.data;
   },
 
-  deletePage: async (sectionId: string, pageId: string): Promise<any> => {
+  deletePage: async (sectionId: string, pageId: string): Promise<{ success: boolean; message: string }> => {
     const response = await api.delete(
       `/api/documentation/sections/${sectionId}/pages/${pageId}`
     );
     return response.data;
   },
 
-  reorderPages: async (sectionId: string, items: any[]): Promise<any> => {
+  reorderPages: async (sectionId: string, items: Array<{ id: string; sidebarPosition: number }>): Promise<DocumentationPagesResponse> => {
     const response = await api.post(
       `/api/documentation/sections/${sectionId}/pages/reorder`,
       { items }
