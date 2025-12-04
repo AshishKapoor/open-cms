@@ -87,3 +87,61 @@ model NewsletterSubscriber {
 
   @@map("newsletter_subscribers")
 }
+
+model DocumentationProduct {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  published   Boolean  @default(false)
+  sidebarPosition Int   @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  sections DocumentationSection[]
+
+  @@map("documentation_products")
+}
+
+model DocumentationSection {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String
+  description String?
+  sidebarPosition Int   @default(0)
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Foreign keys
+  productId String
+
+  // Relations
+  product DocumentationProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  pages   DocumentationPage[]
+
+  @@unique([productId, slug])
+  @@map("documentation_sections")
+}
+
+model DocumentationPage {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String
+  content     String
+  excerpt     String?
+  sidebarPosition Int   @default(0)
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Foreign keys
+  sectionId String
+
+  // Relations
+  section DocumentationSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@unique([sectionId, slug])
+  @@map("documentation_pages")
+}

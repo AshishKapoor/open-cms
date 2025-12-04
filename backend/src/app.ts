@@ -12,6 +12,7 @@ import postRoutes from './routes/posts';
 import newsletterRoutes from './routes/newsletter';
 import tagsRoutes from './routes/tags';
 import uploadRoutes from './routes/upload';
+import documentationRoutes from './routes/documentation';
 
 const app: Application = express();
 
@@ -88,6 +89,7 @@ app.use('/api/posts', postRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/tags', tagsRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/documentation', documentationRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

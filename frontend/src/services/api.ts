@@ -285,4 +285,129 @@ export const uploadAPI = {
   },
 };
 
+// Documentation API
+export const documentationAPI = {
+  // Products
+  getAllProducts: async (): Promise<{
+    success: boolean;
+    data: { products: any[] };
+  }> => {
+    const response = await api.get("/api/documentation/products");
+    return response.data;
+  },
+
+  getProductBySlug: async (slug: string): Promise<any> => {
+    const response = await api.get(`/api/documentation/products/${slug}`);
+    return response.data;
+  },
+
+  createProduct: async (data: any): Promise<any> => {
+    const response = await api.post("/api/documentation/products", data);
+    return response.data;
+  },
+
+  updateProduct: async (id: string, data: any): Promise<any> => {
+    const response = await api.put(`/api/documentation/products/${id}`, data);
+    return response.data;
+  },
+
+  deleteProduct: async (id: string): Promise<any> => {
+    const response = await api.delete(`/api/documentation/products/${id}`);
+    return response.data;
+  },
+
+  // Sections
+  getSectionsByProduct: async (productId: string): Promise<any> => {
+    const response = await api.get(
+      `/api/documentation/products/${productId}/sections`
+    );
+    return response.data;
+  },
+
+  createSection: async (productId: string, data: any): Promise<any> => {
+    const response = await api.post(
+      `/api/documentation/products/${productId}/sections`,
+      data
+    );
+    return response.data;
+  },
+
+  updateSection: async (
+    productId: string,
+    sectionId: string,
+    data: any
+  ): Promise<any> => {
+    const response = await api.put(
+      `/api/documentation/products/${productId}/sections/${sectionId}`,
+      data
+    );
+    return response.data;
+  },
+
+  deleteSection: async (productId: string, sectionId: string): Promise<any> => {
+    const response = await api.delete(
+      `/api/documentation/products/${productId}/sections/${sectionId}`
+    );
+    return response.data;
+  },
+
+  reorderSections: async (productId: string, items: any[]): Promise<any> => {
+    const response = await api.post(
+      `/api/documentation/products/${productId}/sections/reorder`,
+      { items }
+    );
+    return response.data;
+  },
+
+  // Pages
+  getPagesBySection: async (sectionId: string): Promise<any> => {
+    const response = await api.get(
+      `/api/documentation/sections/${sectionId}/pages`
+    );
+    return response.data;
+  },
+
+  getPageBySlug: async (sectionId: string, slug: string): Promise<any> => {
+    const response = await api.get(
+      `/api/documentation/sections/${sectionId}/pages/${slug}`
+    );
+    return response.data;
+  },
+
+  createPage: async (sectionId: string, data: any): Promise<any> => {
+    const response = await api.post(
+      `/api/documentation/sections/${sectionId}/pages`,
+      data
+    );
+    return response.data;
+  },
+
+  updatePage: async (
+    sectionId: string,
+    pageId: string,
+    data: any
+  ): Promise<any> => {
+    const response = await api.put(
+      `/api/documentation/sections/${sectionId}/pages/${pageId}`,
+      data
+    );
+    return response.data;
+  },
+
+  deletePage: async (sectionId: string, pageId: string): Promise<any> => {
+    const response = await api.delete(
+      `/api/documentation/sections/${sectionId}/pages/${pageId}`
+    );
+    return response.data;
+  },
+
+  reorderPages: async (sectionId: string, items: any[]): Promise<any> => {
+    const response = await api.post(
+      `/api/documentation/sections/${sectionId}/pages/reorder`,
+      { items }
+    );
+    return response.data;
+  },
+};
+
 export default api;
