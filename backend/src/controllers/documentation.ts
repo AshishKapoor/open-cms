@@ -372,18 +372,30 @@ export const reorderSections = async (
     const { productId } = req.params;
     const validatedData = reorderSchema.parse(req.body);
 
-    // Validate that all items belong to this product
+    // Validate that all items belong to this product and no duplicates
+    const itemIds = validatedData.items.map((i) => i.id);
+    const uniqueItemIds = Array.from(new Set(itemIds));
+    if (uniqueItemIds.length !== itemIds.length) {
+      res.status(400).json({
+        error: 'Duplicate section IDs are not allowed in reorder',
+      });
+      return;
+    }
+
     const existingItems = await db.documentationSection.findMany({
       where: {
-        id: { in: validatedData.items.map((i) => i.id) },
+        id: { in: uniqueItemIds },
         productId,
       },
       select: { id: true },
     });
 
-    if (existingItems.length !== validatedData.items.length) {
+    const existingIdsSet = new Set(existingItems.map((item) => item.id));
+    const missingIds = uniqueItemIds.filter((id) => !existingIdsSet.has(id));
+    if (missingIds.length > 0) {
       res.status(400).json({
         error: 'Some sections do not belong to this product',
+        details: { missingSectionIds: missingIds },
       });
       return;
     }
