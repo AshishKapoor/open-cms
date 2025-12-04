@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Upload, X, Image as ImageIcon, Loader2 } from "lucide-react";
 import { uploadAPI } from "../services/api";
 
@@ -41,12 +41,9 @@ const ImageUploadDialog: React.FC<ImageUploadDialogProps> = ({
     setError(null);
     setSelectedFile(file);
 
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreviewUrl(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+    // Create preview using URL.createObjectURL (more efficient and easier to clean up)
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
   };
 
   const handleUpload = async () => {
@@ -58,7 +55,9 @@ const ImageUploadDialog: React.FC<ImageUploadDialogProps> = ({
 
     try {
       const response = await uploadAPI.uploadImage(selectedFile, (progressEvent) => {
-        const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        const progress = progressEvent.total
+          ? Math.round((progressEvent.loaded * 100) / progressEvent.total)
+          : 0;
         setUploadProgress(progress);
       });
 
@@ -106,14 +105,46 @@ const ImageUploadDialog: React.FC<ImageUploadDialogProps> = ({
     }
   };
 
+  // Cleanup preview URL when component unmounts or preview changes
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
+  // Handle escape key to close dialog
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !uploading) {
+        setSelectedFile(null);
+        setPreviewUrl(null);
+        setUploadProgress(0);
+        setError(null);
+        onClose();
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [isOpen, uploading, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="upload-dialog-title"
+      onClick={(e) => e.target === e.currentTarget && !uploading && handleClose()}
+    >
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold text-gray-900">Upload Image</h2>
+          <h2 id="upload-dialog-title" className="text-lg font-semibold text-gray-900">Upload Image</h2>
           <button
             onClick={handleClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"

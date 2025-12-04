@@ -1,4 +1,5 @@
 import * as Minio from 'minio';
+import * as path from 'path';
 import { config } from './config';
 import { Readable } from 'stream';
 
@@ -63,8 +64,14 @@ export const uploadFile = async (
     // Generate unique filename
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 15);
-    const extension = originalName.split('.').pop();
-    const fileName = `${timestamp}-${randomString}.${extension}`;
+    const extension = path.extname(originalName).toLowerCase() || '';
+    
+    // Validate that the file has an extension
+    if (!extension) {
+      throw new Error('File must have a valid extension');
+    }
+    
+    const fileName = `${timestamp}-${randomString}${extension}`;
 
     // Convert buffer to stream
     const stream = Readable.from(file);
