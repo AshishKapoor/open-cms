@@ -217,11 +217,10 @@ const Home: React.FC = () => {
                       setSelectedTagSlugs([...selectedTagSlugs, tag.slug]);
                     }
                   }}
-                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border transition-colors ${
-                    selectedTagSlugs.includes(tag.slug)
-                      ? "text-white border-transparent shadow-sm"
-                      : "text-gray-700 border-gray-300 hover:bg-gray-50"
-                  }`}
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border transition-colors ${selectedTagSlugs.includes(tag.slug)
+                    ? "text-white border-transparent shadow-sm"
+                    : "text-gray-700 border-gray-300 hover:bg-gray-50"
+                    }`}
                   style={{
                     backgroundColor: selectedTagSlugs.includes(tag.slug)
                       ? tag.color || "#3B82F6"
@@ -279,12 +278,23 @@ const Home: React.FC = () => {
               : "Be the first to share your story and inspire others in our community!"}
           </p>
           {!debouncedSearchTerm && selectedTagSlugs.length === 0 && (
-            <Link
-              to="/register"
-              className="inline-flex items-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors"
-            >
-              Start Writing
-            </Link>
+            <>
+              {isAuthenticated ? (
+                <Link
+                  to="/create"
+                  className="inline-flex items-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors"
+                >
+                  Create a New Post
+                </Link>
+              ) : (
+                <Link
+                  to="/register"
+                  className="inline-flex items-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors"
+                >
+                  Start Writing
+                </Link>
+              )}
+            </>
           )}
         </div>
       ) : (
@@ -313,11 +323,10 @@ const Home: React.FC = () => {
                   <div className="flex items-center space-x-2 text-sm text-gray-500 mb-3">
                     <Avatar
                       src={post.author.avatar}
-                      alt={`${
-                        post.author.firstName && post.author.lastName
-                          ? `${post.author.firstName} ${post.author.lastName}`
-                          : post.author.username
-                      } avatar`}
+                      alt={`${post.author.firstName && post.author.lastName
+                        ? `${post.author.firstName} ${post.author.lastName}`
+                        : post.author.username
+                        } avatar`}
                       size="sm"
                     />
                     <span className="font-medium">
@@ -413,11 +422,10 @@ const Home: React.FC = () => {
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={!pagination.hasPrevPage}
-                className={`flex items-center px-3 py-2 rounded-lg font-medium transition-colors ${
-                  pagination.hasPrevPage
-                    ? "text-gray-700 hover:bg-gray-100"
-                    : "text-gray-400 cursor-not-allowed"
-                }`}
+                className={`flex items-center px-3 py-2 rounded-lg font-medium transition-colors ${pagination.hasPrevPage
+                  ? "text-gray-700 hover:bg-gray-100"
+                  : "text-gray-400 cursor-not-allowed"
+                  }`}
               >
                 <ChevronLeft className="h-4 w-4 mr-1" />
                 Previous
@@ -432,11 +440,10 @@ const Home: React.FC = () => {
                     ) : (
                       <button
                         onClick={() => handlePageChange(page as number)}
-                        className={`px-3 py-2 rounded-lg font-medium transition-colors ${
-                          page === currentPage
-                            ? "bg-primary-600 text-white"
-                            : "text-gray-700 hover:bg-gray-100"
-                        }`}
+                        className={`px-3 py-2 rounded-lg font-medium transition-colors ${page === currentPage
+                          ? "bg-primary-600 text-white"
+                          : "text-gray-700 hover:bg-gray-100"
+                          }`}
                       >
                         {page}
                       </button>
@@ -449,11 +456,10 @@ const Home: React.FC = () => {
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={!pagination.hasNextPage}
-                className={`flex items-center px-3 py-2 rounded-lg font-medium transition-colors ${
-                  pagination.hasNextPage
-                    ? "text-gray-700 hover:bg-gray-100"
-                    : "text-gray-400 cursor-not-allowed"
-                }`}
+                className={`flex items-center px-3 py-2 rounded-lg font-medium transition-colors ${pagination.hasNextPage
+                  ? "text-gray-700 hover:bg-gray-100"
+                  : "text-gray-400 cursor-not-allowed"
+                  }`}
               >
                 Next
                 <ChevronRight className="h-4 w-4 ml-1" />

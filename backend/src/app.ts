@@ -11,6 +11,7 @@ import authRoutes from './routes/auth';
 import postRoutes from './routes/posts';
 import newsletterRoutes from './routes/newsletter';
 import tagsRoutes from './routes/tags';
+import uploadRoutes from './routes/upload';
 
 const app: Application = express();
 
@@ -86,6 +87,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/tags', tagsRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

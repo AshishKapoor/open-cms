@@ -59,6 +59,14 @@ services:
       DATABASE_URL: postgresql://blog_user:blog_password@postgres:5432/blog_dev
       JWT_SECRET: dev-jwt-secret-key-that-is-long-enough-for-production-use-32-chars
       CORS_ORIGIN: http://localhost:5173
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_EXTERNAL_ENDPOINT: localhost
+      MINIO_EXTERNAL_PORT: 9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin123
+      MINIO_USE_SSL: false
+      MINIO_BUCKET: blog-images
     ports:
       - "3000:3000"
       - "5555:5555"
@@ -67,12 +75,13 @@ services:
         condition: service_healthy
       migrate:
         condition: service_completed_successfully
+      minio:
+        condition: service_healthy
     networks:
       - blog-network
     volumes:
       - ./backend:/app/backend
       - backend_node_modules:/app/backend/node_modules
-      - ./backend/uploads:/app/backend/uploads
     restart: unless-stopped
 
   # Frontend service for development
@@ -115,6 +124,29 @@ services:
       - pgadmin_data:/var/lib/pgadmin
     restart: unless-stopped
 
+  # MinIO object storage service
+  minio:
+    image: minio/minio:latest
+    container_name: blog-minio-dev
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+      MINIO_BROWSER_REDIRECT_URL: http://localhost:9001
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - blog-network
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
 networks:
   blog-network:
     driver: bridge
@@ -127,4 +159,6 @@ volumes:
   backend_node_modules:
     driver: local
   pgadmin_data:
+    driver: local
+  minio_data:
     driver: local

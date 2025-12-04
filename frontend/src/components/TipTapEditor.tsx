@@ -48,6 +48,7 @@ import {
   Palette,
 } from "lucide-react";
 import { cn } from "../lib/utils";
+import ImageUploadDialog from "./ImageUploadDialog";
 
 interface TipTapEditorProps {
   value: string;
@@ -66,6 +67,8 @@ const TipTapEditor: React.FC<TipTapEditorProps> = ({
   hideToolbar = false,
   className,
 }) => {
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = React.useState(false);
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -129,11 +132,17 @@ const TipTapEditor: React.FC<TipTapEditorProps> = ({
   }, [editor, value]);
 
   const addImage = React.useCallback(() => {
-    const url = window.prompt("Enter image URL:");
-    if (url && editor) {
-      editor.chain().focus().setImage({ src: url }).run();
-    }
-  }, [editor]);
+    setIsUploadDialogOpen(true);
+  }, []);
+
+  const handleImageUploaded = React.useCallback(
+    (imageUrl: string) => {
+      if (editor) {
+        editor.chain().focus().setImage({ src: imageUrl }).run();
+      }
+    },
+    [editor]
+  );
 
   const setLink = React.useCallback(() => {
     const previousUrl = editor?.getAttributes("link").href;
@@ -630,6 +639,13 @@ const TipTapEditor: React.FC<TipTapEditorProps> = ({
       >
         <EditorContent editor={editor} />
       </div>
+
+      {/* Image Upload Dialog */}
+      <ImageUploadDialog
+        isOpen={isUploadDialogOpen}
+        onClose={() => setIsUploadDialogOpen(false)}
+        onImageUploaded={handleImageUploaded}
+      />
     </div>
   );
 };
