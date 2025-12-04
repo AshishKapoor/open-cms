@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../context/AuthContext";
-import { authAPI } from "../services/api";
-import { User, Camera, Save, X, AlertCircle } from "lucide-react";
+import { authAPI, uploadAPI } from "../services/api";
+import { User, Camera, Save, X, AlertCircle, Upload } from "lucide-react";
 import toast from "react-hot-toast";
 import Avatar from "../components/Avatar";
+import ImageUploadDialog from "../components/ImageUploadDialog";
 
 const Profile: React.FC = () => {
   const { user, updateUser } = useAuth();
@@ -12,6 +13,8 @@ const Profile: React.FC = () => {
   const [avatar, setAvatar] = useState(user?.avatar || "");
   const [bio, setBio] = useState(user?.bio || "");
   const [isEditing, setIsEditing] = useState(false);
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   const updateProfileMutation = useMutation({
     mutationFn: authAPI.updateProfile,
@@ -26,7 +29,7 @@ const Profile: React.FC = () => {
       const message =
         error && typeof error === "object" && "response" in error
           ? (error as { response?: { data?: { error?: string } } })?.response
-              ?.data?.error || "Failed to update profile"
+            ?.data?.error || "Failed to update profile"
           : "Failed to update profile";
       toast.error(message);
     },
@@ -60,6 +63,12 @@ const Profile: React.FC = () => {
     setAvatar(user?.avatar || "");
     setBio(user?.bio || "");
     setIsEditing(false);
+  };
+
+  const handleAvatarUploaded = (imageUrl: string) => {
+    setAvatar(imageUrl);
+    setIsUploadDialogOpen(false);
+    toast.success("Avatar uploaded successfully!");
   };
 
   if (!user) {
@@ -114,30 +123,29 @@ const Profile: React.FC = () => {
             {/* Form Section */}
             <div className="p-8">
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Avatar URL */}
-                <div>
-                  <label className="flex items-center text-sm font-semibold text-gray-700 mb-3">
-                    <Camera className="h-4 w-4 mr-2" />
-                    Avatar URL
-                  </label>
-                  <input
-                    type="url"
-                    value={avatar}
-                    onChange={(e) => setAvatar(e.target.value)}
-                    disabled={!isEditing}
-                    className={`w-full px-4 py-3 rounded-xl border transition-all duration-200 ${
-                      isEditing
-                        ? "border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 bg-white"
-                        : "border-gray-200 bg-gray-50 text-gray-600"
-                    }`}
-                    placeholder="https://example.com/avatar.jpg"
-                  />
-                  {isEditing && (
+                {/* Profile Picture */}
+                {isEditing && (
+                  <div>
+                    <label className="flex items-center text-sm font-semibold text-gray-700 mb-3">
+                      <Camera className="h-4 w-4 mr-2" />
+                      Profile Picture
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setIsUploadDialogOpen(true)}
+                      disabled={isUploadingAvatar}
+                      className="w-full flex items-center justify-center space-x-2 px-4 py-3 border border-dashed border-primary-300 rounded-xl text-primary-600 hover:bg-primary-50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Upload className="h-4 w-4" />
+                      <span>
+                        {isUploadingAvatar ? "Uploading..." : "Upload Profile Picture"}
+                      </span>
+                    </button>
                     <p className="mt-2 text-xs text-gray-500">
-                      Enter a valid URL to your profile picture
+                      Supports JPEG, PNG, GIF, and WebP (Max 5MB)
                     </p>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 {/* Bio */}
                 <div>
@@ -151,11 +159,10 @@ const Profile: React.FC = () => {
                     disabled={!isEditing}
                     rows={4}
                     maxLength={500}
-                    className={`w-full px-4 py-3 rounded-xl border transition-all duration-200 resize-none ${
-                      isEditing
-                        ? "border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 bg-white"
-                        : "border-gray-200 bg-gray-50 text-gray-600"
-                    }`}
+                    className={`w-full px-4 py-3 rounded-xl border transition-all duration-200 resize-none ${isEditing
+                      ? "border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 bg-white"
+                      : "border-gray-200 bg-gray-50 text-gray-600"
+                      }`}
                     placeholder="Tell us about yourself..."
                   />
                   {isEditing && (
@@ -267,6 +274,13 @@ const Profile: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Image Upload Dialog */}
+      <ImageUploadDialog
+        isOpen={isUploadDialogOpen}
+        onClose={() => setIsUploadDialogOpen(false)}
+        onImageUploaded={handleAvatarUploaded}
+      />
     </div>
   );
 };

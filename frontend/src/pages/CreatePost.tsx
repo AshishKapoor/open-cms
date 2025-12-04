@@ -22,6 +22,7 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import TipTapEditor from "../components/TipTapEditor";
 import UnsplashPhotoPicker from "../components/UnsplashPhotoPicker";
+import ImageUploadDialog from "../components/ImageUploadDialog";
 import TagSelector from "../components/TagSelector";
 import { useAuth } from "../context/AuthContext";
 import { useZenMode } from "../context/ZenModeContext";
@@ -66,7 +67,8 @@ const CreatePost: React.FC = () => {
     null
   );
   const [isUnsplashPickerOpen, setIsUnsplashPickerOpen] = useState(false);
-  const [imageInputMode, setImageInputMode] = useState<"unsplash" | "url">(
+  const [isImageUploadDialogOpen, setIsImageUploadDialogOpen] = useState(false);
+  const [imageInputMode, setImageInputMode] = useState<"unsplash" | "upload">(
     "unsplash"
   );
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
@@ -277,11 +279,10 @@ const CreatePost: React.FC = () => {
 
   return (
     <div
-      className={`min-h-screen transition-all duration-300 ${
-        isZenMode
+      className={`min-h-screen transition-all duration-300 ${isZenMode
           ? "bg-gray-900 text-white"
           : "bg-gradient-to-br from-gray-50 to-white"
-      }`}
+        }`}
     >
       {/* Enhanced Header */}
       {!isZenMode && (
@@ -311,11 +312,10 @@ const CreatePost: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setIsPreview(!isPreview)}
-                    className={`p-2 border rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
-                      isPreview
+                    className={`p-2 border rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${isPreview
                         ? "bg-primary-50 border-primary-200 text-primary-700"
                         : "border-gray-300 hover:bg-gray-50"
-                    }`}
+                      }`}
                   >
                     <Eye className="h-4 w-4" />
                   </button>
@@ -400,11 +400,10 @@ const CreatePost: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setIsPreview(!isPreview)}
-                    className={`btn-outline btn-sm flex items-center space-x-1 ${
-                      isPreview
+                    className={`btn-outline btn-sm flex items-center space-x-1 ${isPreview
                         ? "bg-primary-50 border-primary-200 text-primary-700"
                         : ""
-                    }`}
+                      }`}
                   >
                     <Eye className="h-4 w-4" />
                     <span className="hidden sm:inline">Preview</span>
@@ -438,28 +437,25 @@ const CreatePost: React.FC = () => {
             /* Enhanced Editor Form */
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className={`space-y-6 sm:space-y-8 ${
-                isZenMode ? "max-w-4xl mx-auto px-4 sm:px-8 py-8 sm:py-16" : ""
-              }`}
+              className={`space-y-6 sm:space-y-8 ${isZenMode ? "max-w-4xl mx-auto px-4 sm:px-8 py-8 sm:py-16" : ""
+                }`}
             >
               {/* Title - Enhanced */}
               <div className="space-y-3">
                 <label
                   htmlFor="title"
-                  className={`block text-sm font-semibold tracking-wide ${
-                    isZenMode ? "text-gray-300" : "text-gray-700"
-                  } mb-3`}
+                  className={`block text-sm font-semibold tracking-wide ${isZenMode ? "text-gray-300" : "text-gray-700"
+                    } mb-3`}
                 >
                   TITLE *
                 </label>
                 <input
                   {...register("title")}
                   type="text"
-                  className={`w-full font-bold border-none outline-none bg-transparent placeholder-gray-400 focus:ring-0 ${
-                    isZenMode
+                  className={`w-full font-bold border-none outline-none bg-transparent placeholder-gray-400 focus:ring-0 ${isZenMode
                       ? "text-white placeholder-gray-500 text-2xl sm:text-3xl lg:text-5xl"
                       : "text-gray-900 text-xl sm:text-2xl lg:text-4xl"
-                  } ${errors.title ? "text-red-500" : ""}`}
+                    } ${errors.title ? "text-red-500" : ""}`}
                   placeholder="Your amazing story starts here..."
                   style={{
                     lineHeight: "1.2",
@@ -485,9 +481,8 @@ const CreatePost: React.FC = () => {
                   <textarea
                     {...register("excerpt")}
                     rows={3}
-                    className={`w-full text-base sm:text-lg border border-gray-200 rounded-xl px-3 sm:px-4 py-3 sm:py-4 bg-white shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 resize-none min-h-[88px] ${
-                      errors.excerpt ? "border-red-500 focus:ring-red-500" : ""
-                    }`}
+                    className={`w-full text-base sm:text-lg border border-gray-200 rounded-xl px-3 sm:px-4 py-3 sm:py-4 bg-white shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 resize-none min-h-[88px] ${errors.excerpt ? "border-red-500 focus:ring-red-500" : ""
+                      }`}
                     placeholder="A compelling summary that draws readers in..."
                   />
                   {errors.excerpt && (
@@ -510,11 +505,10 @@ const CreatePost: React.FC = () => {
                   <input
                     {...register("createdAt")}
                     type="datetime-local"
-                    className={`w-full text-base sm:text-lg border border-gray-200 rounded-xl px-3 sm:px-4 py-3 sm:py-4 bg-white shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 min-h-[48px] ${
-                      errors.createdAt
+                    className={`w-full text-base sm:text-lg border border-gray-200 rounded-xl px-3 sm:px-4 py-3 sm:py-4 bg-white shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 min-h-[48px] ${errors.createdAt
                         ? "border-red-500 focus:ring-red-500"
                         : ""
-                    }`}
+                      }`}
                   />
                   <p className="text-xs sm:text-sm text-gray-500">
                     Leave empty to use the current time when creating the post
@@ -543,11 +537,10 @@ const CreatePost: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setImageInputMode("unsplash")}
-                      className={`flex-1 flex items-center justify-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-2 sm:py-3 rounded-md text-xs sm:text-sm font-medium transition-all duration-200 min-h-[44px] ${
-                        imageInputMode === "unsplash"
+                      className={`flex-1 flex items-center justify-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-2 sm:py-3 rounded-md text-xs sm:text-sm font-medium transition-all duration-200 min-h-[44px] ${imageInputMode === "unsplash"
                           ? "bg-white text-primary-600 shadow-sm"
                           : "text-gray-500 hover:text-gray-700"
-                      }`}
+                        }`}
                     >
                       <Camera className="h-4 w-4" />
                       <span className="hidden sm:inline">Browse Unsplash</span>
@@ -555,17 +548,19 @@ const CreatePost: React.FC = () => {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setImageInputMode("url")}
-                      className={`flex-1 flex items-center justify-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-2 sm:py-3 rounded-md text-xs sm:text-sm font-medium transition-all duration-200 min-h-[44px] ${
-                        imageInputMode === "url"
+                      onClick={() => setImageInputMode("upload")}
+                      className={`flex-1 flex items-center justify-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-2 sm:py-3 rounded-md text-xs sm:text-sm font-medium transition-all duration-200 min-h-[44px] ${imageInputMode === "upload"
                           ? "bg-white text-primary-600 shadow-sm"
                           : "text-gray-500 hover:text-gray-700"
-                      }`}
+                        }`}
                     >
-                      <LinkIcon className="h-4 w-4" />
-                      <span className="hidden sm:inline">Enter URL</span>
-                      <span className="sm:hidden">URL</span>
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      <span className="hidden sm:inline">Upload</span>
+                      <span className="sm:hidden">Upload</span>
                     </button>
+
                   </div>
 
                   {imageInputMode === "unsplash" ? (
@@ -611,16 +606,55 @@ const CreatePost: React.FC = () => {
                         </div>
                       )}
                     </div>
+                  ) : imageInputMode === "upload" ? (
+                    /* MinIO Upload Mode */
+                    <div className="space-y-3">
+                      <button
+                        type="button"
+                        onClick={() => setIsImageUploadDialogOpen(true)}
+                        className="w-full border-2 border-dashed border-gray-300 rounded-xl px-4 sm:px-6 py-6 sm:py-8 hover:border-primary-400 hover:bg-primary-50 transition-all duration-200 group min-h-[120px] sm:min-h-[140px]"
+                      >
+                        <div className="text-center">
+                          <svg className="h-8 sm:h-12 w-8 sm:w-12 text-gray-400 group-hover:text-primary-500 mx-auto mb-3 sm:mb-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                          </svg>
+                          <p className="text-base sm:text-lg font-medium text-gray-600 group-hover:text-primary-600 mb-1 sm:mb-2">
+                            Upload Cover Image
+                          </p>
+                          <p className="text-xs sm:text-sm text-gray-500">
+                            Click to upload or drag and drop
+                          </p>
+                        </div>
+                      </button>
+
+                      {watchedValues.coverImage && (
+                        <div className="relative group">
+                          <img
+                            src={watchedValues.coverImage}
+                            alt="Selected cover"
+                            className="w-full h-32 sm:h-48 object-cover rounded-xl border border-gray-200"
+                          />
+                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-xl transition-all duration-200 flex items-center justify-center">
+                            <button
+                              type="button"
+                              onClick={() => setIsImageUploadDialogOpen(true)}
+                              className="opacity-0 group-hover:opacity-100 bg-white text-gray-700 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 hover:bg-gray-50 min-h-[36px]"
+                            >
+                              Change Image
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   ) : (
                     /* Manual URL Mode */
                     <input
                       {...register("coverImage")}
                       type="url"
-                      className={`w-full text-base sm:text-lg border border-gray-200 rounded-xl px-3 sm:px-4 py-3 sm:py-4 bg-white shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 min-h-[48px] ${
-                        errors.coverImage
+                      className={`w-full text-base sm:text-lg border border-gray-200 rounded-xl px-3 sm:px-4 py-3 sm:py-4 bg-white shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 min-h-[48px] ${errors.coverImage
                           ? "border-red-500 focus:ring-red-500"
                           : ""
-                      }`}
+                        }`}
                       placeholder="https://images.unsplash.com/your-amazing-cover"
                     />
                   )}
@@ -645,20 +679,17 @@ const CreatePost: React.FC = () => {
               <div className="space-y-3">
                 <label
                   htmlFor="content"
-                  className={`block text-sm font-semibold tracking-wide ${
-                    isZenMode ? "text-gray-300" : "text-gray-700"
-                  } mb-3`}
+                  className={`block text-sm font-semibold tracking-wide ${isZenMode ? "text-gray-300" : "text-gray-700"
+                    } mb-3`}
                 >
                   {isZenMode ? "" : "CONTENT *"}
                 </label>
                 <div
-                  className={`${
-                    errors.content ? "border-red-500 rounded-xl" : ""
-                  } ${
-                    isZenMode
+                  className={`${errors.content ? "border-red-500 rounded-xl" : ""
+                    } ${isZenMode
                       ? ""
                       : "border border-gray-200 rounded-xl overflow-hidden shadow-sm"
-                  }`}
+                    }`}
                   style={{
                     background: isZenMode
                       ? "transparent"
@@ -683,7 +714,7 @@ const CreatePost: React.FC = () => {
                           ? 400
                           : 600
                         : typeof window !== "undefined" &&
-                            window.innerWidth < 640
+                          window.innerWidth < 640
                           ? 300
                           : 500
                     }
@@ -699,11 +730,10 @@ const CreatePost: React.FC = () => {
 
               {/* Actions - Enhanced */}
               <div
-                className={`pt-6 sm:pt-8 ${
-                  isZenMode
+                className={`pt-6 sm:pt-8 ${isZenMode
                     ? "border-t border-gray-700"
                     : "border-t border-gray-200"
-                }`}
+                  }`}
               >
                 {/* Mobile Layout - Stack vertically */}
                 <div className="block sm:hidden space-y-4">
@@ -717,9 +747,8 @@ const CreatePost: React.FC = () => {
                       />
                       <label
                         htmlFor="published"
-                        className={`text-sm font-medium ${
-                          isZenMode ? "text-gray-300" : "text-gray-700"
-                        }`}
+                        className={`text-sm font-medium ${isZenMode ? "text-gray-300" : "text-gray-700"
+                          }`}
                       >
                         Publish immediately
                       </label>
@@ -730,13 +759,12 @@ const CreatePost: React.FC = () => {
                     type="submit"
                     disabled={createMutation.isPending}
                     onClick={() => console.log("Mobile submit button clicked")}
-                    className={`w-full px-6 py-4 rounded-xl font-semibold transition-all duration-200 text-base min-h-[56px] ${
-                      createMutation.isPending
+                    className={`w-full px-6 py-4 rounded-xl font-semibold transition-all duration-200 text-base min-h-[56px] ${createMutation.isPending
                         ? "bg-gray-400 cursor-not-allowed"
                         : watchedValues.published
                           ? "bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg"
                           : "bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white shadow-lg"
-                    }`}
+                      }`}
                   >
                     {createMutation.isPending ? (
                       <div className="flex items-center justify-center space-x-2">
@@ -769,9 +797,8 @@ const CreatePost: React.FC = () => {
                         }
                       />
                       <label
-                        className={`text-sm font-medium ${
-                          isZenMode ? "text-gray-300" : "text-gray-700"
-                        }`}
+                        className={`text-sm font-medium ${isZenMode ? "text-gray-300" : "text-gray-700"
+                          }`}
                       >
                         Publish immediately
                       </label>
@@ -785,13 +812,12 @@ const CreatePost: React.FC = () => {
                       onClick={() =>
                         console.log("Desktop submit button clicked")
                       }
-                      className={`px-8 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 focus:scale-105 ${
-                        createMutation.isPending
+                      className={`px-8 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 focus:scale-105 ${createMutation.isPending
                           ? "bg-gray-400 cursor-not-allowed"
                           : watchedValues.published
                             ? "bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg"
                             : "bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white shadow-lg"
-                      }`}
+                        }`}
                     >
                       {createMutation.isPending ? (
                         <div className="flex items-center space-x-2">
@@ -873,7 +899,7 @@ const CreatePost: React.FC = () => {
                         color: "inherit",
                         fontSize:
                           typeof window !== "undefined" &&
-                          window.innerWidth < 640
+                            window.innerWidth < 640
                             ? "1rem"
                             : "1.125rem",
                         lineHeight: "1.7",
@@ -894,6 +920,16 @@ const CreatePost: React.FC = () => {
         onPhotoSelect={(photoUrl) => {
           setValue("coverImage", photoUrl);
           // Trigger validation to clear any errors
+          trigger("coverImage");
+        }}
+      />
+
+      {/* Image Upload Dialog for MinIO */}
+      <ImageUploadDialog
+        isOpen={isImageUploadDialogOpen}
+        onClose={() => setIsImageUploadDialogOpen(false)}
+        onImageUploaded={(imageUrl) => {
+          setValue("coverImage", imageUrl);
           trigger("coverImage");
         }}
       />

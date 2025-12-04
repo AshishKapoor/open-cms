@@ -266,4 +266,23 @@ export const tagsAPI = {
   },
 };
 
+// Upload API
+export const uploadAPI = {
+  uploadImage: async (
+    file: File,
+    onUploadProgress?: (progressEvent: any) => void
+  ): Promise<{ success: boolean; imageUrl: string; message: string }> => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await api.post("/api/upload/image", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      onUploadProgress,
+    });
+    return response.data;
+  },
+};
+
 export default api;

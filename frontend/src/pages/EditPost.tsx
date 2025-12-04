@@ -9,6 +9,7 @@ import { Save, Eye, FileText, ArrowLeft, Minimize2, Focus } from "lucide-react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import TipTapEditor from "../components/TipTapEditor";
+import ImageUploadDialog from "../components/ImageUploadDialog";
 import TagSelector from "../components/TagSelector";
 import { useZenMode } from "../context/ZenModeContext";
 import {
@@ -352,27 +353,68 @@ const EditPost: React.FC = () => {
                 </div>
               )}
 
-              {/* Cover Image */}
+              {/* Cover Image - With Upload Option */}
               {!isZenMode && (
-                <div>
-                  <label
-                    htmlFor="coverImage"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Cover Image URL (Optional)
+                <div className="space-y-3">
+                  <label className="block text-sm font-semibold tracking-wide text-gray-700 mb-3">
+                    COVER IMAGE
                   </label>
-                  <input
-                    {...register("coverImage")}
-                    type="url"
-                    className={`input ${
-                      errors.coverImage
-                        ? "border-red-500 focus-visible:ring-red-500"
-                        : ""
-                    }`}
-                    placeholder="https://example.com/image.jpg"
-                  />
+                  
+
+                  {imageInputMode === "upload" ? (
+                    <div className="space-y-3">
+                      <button
+                        type="button"
+                        onClick={() => setIsImageUploadDialogOpen(true)}
+                        className="w-full border-2 border-dashed border-gray-300 rounded-xl px-6 py-8 hover:border-primary-400 hover:bg-primary-50 transition-all duration-200 group min-h-[140px]"
+                      >
+                        <div className="text-center">
+                          <svg className="h-12 w-12 text-gray-400 group-hover:text-primary-500 mx-auto mb-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                          </svg>
+                          <p className="text-lg font-medium text-gray-600 group-hover:text-primary-600 mb-2">
+                            Upload Cover Image
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            Click to upload or drag and drop
+                          </p>
+                        </div>
+                      </button>
+
+                      {watchedValues.coverImage && (
+                        <div className="relative group">
+                          <img
+                            src={watchedValues.coverImage}
+                            alt="Selected cover"
+                            className="w-full h-48 object-cover rounded-xl border border-gray-200"
+                          />
+                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-xl transition-all duration-200 flex items-center justify-center">
+                            <button
+                              type="button"
+                              onClick={() => setIsImageUploadDialogOpen(true)}
+                              className="opacity-0 group-hover:opacity-100 bg-white text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-50 min-h-[36px]"
+                            >
+                              Change Image
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <input
+                      {...register("coverImage")}
+                      type="url"
+                      className={`w-full text-lg border border-gray-200 rounded-xl px-4 py-4 bg-white shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 min-h-[48px] ${
+                        errors.coverImage
+                          ? "border-red-500 focus:ring-red-500"
+                          : ""
+                      }`}
+                      placeholder="https://example.com/image.jpg"
+                    />
+                  )}
+
                   {errors.coverImage && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="text-red-500 text-sm font-medium">
                       {errors.coverImage.message}
                     </p>
                   )}
@@ -531,6 +573,16 @@ const EditPost: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Image Upload Dialog for MinIO */}
+      <ImageUploadDialog
+        isOpen={isImageUploadDialogOpen}
+        onClose={() => setIsImageUploadDialogOpen(false)}
+        onImageUploaded={(imageUrl) => {
+          setValue("coverImage", imageUrl);
+          trigger("coverImage");
+        }}
+      />
     </div>
   );
 };

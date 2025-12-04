@@ -45,10 +45,11 @@ A modern, full-stack blog application built with industry best practices and ope
 - 📝 **Blog Management**: Create, read, update, delete blog posts
 - 🏷️ **Tag System**: Organize posts with tags
 - 📧 **Newsletter**: Newsletter subscription management
-- �️ **Image Integration**: Unsplash photo picker for post covers
+- 🖼️ **Image Upload**: MinIO object storage for image uploads with drag-and-drop
+- 📷 **Image Integration**: Unsplash photo picker for post covers
 - ✏️ **Rich Text Editor**: TipTap editor with markdown support
 - 🤖 **Bot Protection**: Google reCAPTCHA integration
-- �🔒 **Protected Routes**: Authorization and authentication
+- 🔒 **Protected Routes**: Authorization and authentication
 - 📱 **Responsive Design**: Mobile-first approach
 - ⚡ **Fast Development**: HMR with Vite
 - 🧪 **Production Ready**: Docker support
@@ -153,6 +154,42 @@ pnpm build        # Build for production
 pnpm test         # Run tests
 pnpm preview      # Preview production build
 ```
+
+## MinIO Object Storage
+
+This project uses MinIO for storing uploaded images. MinIO provides S3-compatible object storage.
+
+### Quick Setup
+
+```bash
+# Automated setup (recommended)
+./setup-minio.sh
+
+# Manual setup
+cd backend && pnpm install
+docker-compose up --build
+```
+
+### Access Points
+
+- **MinIO Console**: http://localhost:9001
+- **Credentials**: minioadmin / minioadmin123
+- **API Endpoint**: http://localhost:9000
+
+### Documentation
+
+- **Quick Start**: [MINIO_QUICKSTART.md](MINIO_QUICKSTART.md)
+- **Full Setup Guide**: [MINIO_SETUP.md](MINIO_SETUP.md)
+- **Implementation Details**: [MINIO_IMPLEMENTATION.md](MINIO_IMPLEMENTATION.md)
+
+### Features
+
+- 🚀 Drag and drop file upload
+- 📊 Real-time upload progress
+- ✅ File validation (type, size)
+- 🖼️ Image preview before upload
+- 🔒 Authentication required
+- 🌐 Public URL generation
 
 ## API Documentation
 
