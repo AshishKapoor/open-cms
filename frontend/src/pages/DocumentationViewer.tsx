@@ -142,7 +142,19 @@ const DocumentationViewer: React.FC = () => {
             <div className="max-w-4xl mx-auto p-8">
               <div
                 className="prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(currentPage.content) }}
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(currentPage.content, {
+                    ALLOWED_TAGS: [
+                      'p', 'br', 'strong', 'em', 'b', 'i', 'u', 's',
+                      'ul', 'ol', 'li',
+                      'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+                      'code', 'pre', 'blockquote',
+                      'a', 'img', 'table', 'thead', 'tbody', 'tr', 'th', 'td',
+                      'div', 'span', 'hr', 'sub', 'sup'
+                    ],
+                    ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel'],
+                  })
+                }}
               />
             </div>
           ) : (

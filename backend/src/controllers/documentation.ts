@@ -372,6 +372,22 @@ export const reorderSections = async (
     const { productId } = req.params;
     const validatedData = reorderSchema.parse(req.body);
 
+    // Validate that all items belong to this product
+    const existingItems = await db.documentationSection.findMany({
+      where: {
+        id: { in: validatedData.items.map((i) => i.id) },
+        productId,
+      },
+      select: { id: true },
+    });
+
+    if (existingItems.length !== validatedData.items.length) {
+      res.status(400).json({
+        error: 'Some sections do not belong to this product',
+      });
+      return;
+    }
+
     // Update all sections with new positions in a single transaction
     await db.$transaction(
       validatedData.items.map((item) =>
@@ -595,6 +611,22 @@ export const reorderPages = async (
   try {
     const { sectionId } = req.params;
     const validatedData = reorderSchema.parse(req.body);
+
+    // Validate that all items belong to this section
+    const existingItems = await db.documentationPage.findMany({
+      where: {
+        id: { in: validatedData.items.map((i) => i.id) },
+        sectionId,
+      },
+      select: { id: true },
+    });
+
+    if (existingItems.length !== validatedData.items.length) {
+      res.status(400).json({
+        error: 'Some pages do not belong to this section',
+      });
+      return;
+    }
 
     // Update all pages with new positions (batched in a transaction)
     await db.$transaction(
