@@ -68,7 +68,7 @@ export const uploadFile = async (
     
     // Validate that the file has an extension
     if (!extension) {
-      throw new Error('File must have a valid extension');
+      throw new Error('File must have a valid extension (e.g., .jpg, .png, .gif, .webp)');
     }
     
     const fileName = `${timestamp}-${randomString}${extension}`;
