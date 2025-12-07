@@ -1,4 +1,4 @@
-# Blog App
+# open-cms
 
 A modern, full-stack blog application built with industry best practices and open-source technologies.
 
