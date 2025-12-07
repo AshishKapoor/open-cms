@@ -209,3 +209,128 @@ export interface PostsByTagResponse {
     };
   };
 }
+
+// Documentation Types
+export interface DocumentationPage {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  excerpt?: string;
+  sidebarPosition: number;
+  published: boolean;
+  createdAt: string;
+  updatedAt: string;
+  sectionId: string;
+}
+
+export interface DocumentationSection {
+  id: string;
+  title: string;
+  slug: string;
+  description?: string;
+  sidebarPosition: number;
+  published: boolean;
+  createdAt: string;
+  updatedAt: string;
+  productId: string;
+  pages?: DocumentationPage[];
+}
+
+export interface DocumentationProduct {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  published: boolean;
+  sidebarPosition: number;
+  createdAt: string;
+  updatedAt: string;
+  sections?: DocumentationSection[];
+}
+
+export interface CreateDocumentationProductData {
+  name: string;
+  slug: string;
+  description?: string;
+  published?: boolean;
+}
+
+export interface UpdateDocumentationProductData {
+  name?: string;
+  slug?: string;
+  description?: string;
+  published?: boolean;
+}
+
+export interface CreateDocumentationSectionData {
+  title: string;
+  slug: string;
+  description?: string;
+  published?: boolean;
+}
+
+export interface UpdateDocumentationSectionData {
+  title?: string;
+  slug?: string;
+  description?: string;
+  published?: boolean;
+}
+
+export interface CreateDocumentationPageData {
+  title: string;
+  slug: string;
+  content: string;
+  excerpt?: string;
+  published?: boolean;
+}
+
+export interface UpdateDocumentationPageData {
+  title?: string;
+  slug?: string;
+  content?: string;
+  excerpt?: string;
+  published?: boolean;
+}
+
+export interface DocumentationProductResponse {
+  success: boolean;
+  data: {
+    product: DocumentationProduct;
+  };
+}
+
+export interface DocumentationProductsResponse {
+  success: boolean;
+  data: {
+    products: DocumentationProduct[];
+  };
+}
+
+export interface DocumentationSectionResponse {
+  success: boolean;
+  data: {
+    section: DocumentationSection;
+  };
+}
+
+export interface DocumentationSectionsResponse {
+  success: boolean;
+  data: {
+    sections: DocumentationSection[];
+  };
+}
+
+export interface DocumentationPageResponse {
+  success: boolean;
+  data: {
+    page: DocumentationPage;
+  };
+}
+
+export interface DocumentationPagesResponse {
+  success: boolean;
+  data: {
+    pages: DocumentationPage[];
+  };
+}

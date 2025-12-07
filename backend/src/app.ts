@@ -12,6 +12,7 @@ import postRoutes from './routes/posts';
 import newsletterRoutes from './routes/newsletter';
 import tagsRoutes from './routes/tags';
 import uploadRoutes from './routes/upload';
+import documentationRoutes from './routes/documentation';
 
 const app: Application = express();
 
@@ -26,8 +27,8 @@ app.use(
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: 30 * 60 * 1000, // 30 minutes
+  max: 1000, // limit each IP to 1000 requests per windowMs
 });
 app.use(limiter);
 
@@ -88,6 +89,7 @@ app.use('/api/posts', postRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/tags', tagsRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/documentation', documentationRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

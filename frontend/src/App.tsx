@@ -17,6 +17,10 @@ import CreatePost from "./pages/CreatePost";
 import EditPost from "./pages/EditPost";
 import PostDetail from "./pages/PostDetail";
 import Profile from "./pages/Profile";
+import DocumentationHub from "./pages/DocumentationHub";
+import DocumentationEditor from "./pages/DocumentationEditor";
+import DocumentationViewer from "./pages/DocumentationViewer";
+import DocsLanding from "./pages/DocsLanding";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Create a client
@@ -77,6 +81,28 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
+
+                  {/* Documentation routes */}
+                  <Route
+                    path="/admin/documentation"
+                    element={
+                      <ProtectedRoute>
+                        <DocumentationHub />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/documentation/:productId"
+                    element={
+                      <ProtectedRoute>
+                        <DocumentationEditor />
+                      </ProtectedRoute>
+                    }
+                  />
+                  {/* Public documentation routes */}
+                  <Route path="/docs" element={<DocsLanding />} />
+                  <Route path="/docs/:productSlug" element={<DocumentationViewer />} />
+                  <Route path="/docs/:productSlug/:pageSlug" element={<DocumentationViewer />} />
 
                   {/* Catch all route */}
                   <Route path="*" element={<Navigate to="/" replace />} />
