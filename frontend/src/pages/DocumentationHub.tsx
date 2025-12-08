@@ -97,6 +97,20 @@ const DocumentationHub: React.FC = () => {
     });
   };
 
+  const handleGenerateSlug = () => {
+    if (!newProductName.trim()) {
+      toast.error("Enter a product name first");
+      return;
+    }
+    const slug = newProductName
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-");
+    setNewProductSlug(slug);
+  };
+
   const products = productsData?.data?.products || [];
 
   if (isLoading) {
