@@ -173,6 +173,131 @@ const DocumentationEditor: React.FC = () => {
 
   const sections = sectionsData?.data?.sections || [];
 
+  if (activeSectionId) {
+    return (
+      <div className="fixed inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-50 z-50 overflow-auto">
+        <div className="min-h-full flex flex-col">
+          {/* Header */}
+          <div className="sticky top-0 bg-white border-b border-gray-200 px-8 py-6 z-40">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold">
+                  {editingPageId ? "Edit Page" : "New Page"}
+                </h2>
+              </div>
+              <button
+                onClick={() => {
+                  setActiveSectionId(null);
+                  setEditingPageId(null);
+                  setPageTitle("");
+                  setPageSlug("");
+                  setPageContent("");
+                  setPagePublished(true);
+                }}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Form Container */}
+          <div className="flex-1 px-8 py-6">
+            <form onSubmit={handleSavePage} className="space-y-6 max-w-4xl mx-auto h-full flex flex-col">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Page Title
+                </label>
+                <input
+                  type="text"
+                  value={pageTitle}
+                  onChange={(e) => {
+                    setPageTitle(e.target.value);
+                    if (!editingPageId) {
+                      setPageSlug(handleGenerateSlug(e.target.value));
+                    }
+                  }}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Slug
+                </label>
+                <input
+                  type="text"
+                  value={pageSlug}
+                  onChange={(e) => setPageSlug(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="flex-1 flex flex-col">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Content
+                </label>
+                <div className="flex-1 overflow-auto">
+                  <TipTapEditor
+                    value={pageContent}
+                    onChange={setPageContent}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3 border-t border-gray-200 pt-6">
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={pagePublished}
+                    onChange={(e) => setPagePublished(e.target.checked)}
+                    className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                  />
+                  <span className="text-sm font-medium text-gray-700">
+                    Publish this page
+                  </span>
+                </label>
+                <span className="text-xs text-gray-500">
+                  (Only published pages are visible to the public)
+                </span>
+              </div>
+
+              <div className="flex gap-2 border-t border-gray-200 pt-6">
+                <button
+                  type="submit"
+                  disabled={savePageMutation.isPending}
+                  className="bg-gradient-to-r from-primary-600 to-primary-700 text-white px-6 py-3 rounded-lg hover:from-primary-700 hover:to-primary-800 disabled:opacity-50"
+                >
+                  {savePageMutation.isPending
+                    ? "Saving..."
+                    : editingPageId
+                      ? "Update Page"
+                      : "Create Page"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveSectionId(null);
+                    setEditingPageId(null);
+                    setPageTitle("");
+                    setPageSlug("");
+                    setPageContent("");
+                    setPagePublished(true);
+                  }}
+                  className="px-6 py-3 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 py-8">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -320,106 +445,13 @@ const DocumentationEditor: React.FC = () => {
             </div>
           </div>
 
-          {/* Main Editor */}
+          {/* Main Editor Placeholder */}
           <div className="lg:col-span-2">
-            {activeSectionId ? (
-              <div className="bg-white rounded-xl shadow-md p-8">
-                <h2 className="text-2xl font-bold mb-6">
-                  {editingPageId ? "Edit Page" : "New Page"}
-                </h2>
-                <form onSubmit={handleSavePage} className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Page Title
-                    </label>
-                    <input
-                      type="text"
-                      value={pageTitle}
-                      onChange={(e) => {
-                        setPageTitle(e.target.value);
-                        if (!editingPageId) {
-                          setPageSlug(handleGenerateSlug(e.target.value));
-                        }
-                      }}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Slug
-                    </label>
-                    <input
-                      type="text"
-                      value={pageSlug}
-                      onChange={(e) => setPageSlug(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Content
-                    </label>
-                    <TipTapEditor
-                      value={pageContent}
-                      onChange={setPageContent}
-                    />
-                  </div>
-
-                  <div className="flex items-center space-x-3">
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={pagePublished}
-                        onChange={(e) => setPagePublished(e.target.checked)}
-                        className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-                      />
-                      <span className="text-sm font-medium text-gray-700">
-                        Publish this page
-                      </span>
-                    </label>
-                    <span className="text-xs text-gray-500">
-                      (Only published pages are visible to the public)
-                    </span>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <button
-                      type="submit"
-                      disabled={savePageMutation.isPending}
-                      className="bg-gradient-to-r from-primary-600 to-primary-700 text-white px-6 py-3 rounded-lg hover:from-primary-700 hover:to-primary-800 disabled:opacity-50"
-                    >
-                      {savePageMutation.isPending
-                        ? "Saving..."
-                        : editingPageId
-                          ? "Update Page"
-                          : "Create Page"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setActiveSectionId(null);
-                        setEditingPageId(null);
-                        setPageTitle("");
-                        setPageSlug("");
-                        setPageContent("");
-                        setPagePublished(true);
-                      }}
-                      className="px-6 py-3 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              </div>
-            ) : (
-              <div className="bg-white rounded-xl shadow-md p-8 text-center">
-                <p className="text-gray-600">
-                  Select a section and click "New Page" to start creating
-                </p>
-              </div>
-            )}
+            <div className="bg-white rounded-xl shadow-md p-8 text-center">
+              <p className="text-gray-600">
+                Select a section and click "New Page" to start creating
+              </p>
+            </div>
           </div>
         </div>
       </div>
