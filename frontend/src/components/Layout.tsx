@@ -118,7 +118,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       className="group flex items-center space-x-2 px-4 py-3 rounded-xl text-gray-600 hover:text-primary-600 hover:bg-primary-50/50 transition-all duration-200 relative"
                     >
                       <UserCogIcon className="h-5 w-5 transition-transform duration-200 group-hover:scale-110" />
-                      <span className="font-medium">Posts</span>
+                      <span className="font-medium">Posts Panel</span>
                     </Link>
 
                     {user?.isAdmin && (
