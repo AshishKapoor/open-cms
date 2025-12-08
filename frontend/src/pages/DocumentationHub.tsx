@@ -97,17 +97,6 @@ const DocumentationHub: React.FC = () => {
     });
   };
 
-  const handleGenerateSlug = () => {
-    setNewProductSlug(
-      newProductName
-        .toLowerCase()
-        .replace(/[^a-z0-9 -]/g, "")
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-")
-        .trim()
-    );
-  };
-
   const products = productsData?.data?.products || [];
 
   if (isLoading) {
@@ -239,8 +228,8 @@ const DocumentationHub: React.FC = () => {
                       <button
                         onClick={() => handleTogglePublish(product)}
                         className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${product.published
-                            ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
-                            : "bg-green-100 text-green-700 hover:bg-green-200"
+                          ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
+                          : "bg-green-100 text-green-700 hover:bg-green-200"
                           }`}
                         title={product.published ? "Unpublish" : "Publish"}
                       >
