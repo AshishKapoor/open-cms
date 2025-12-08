@@ -153,6 +153,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.62.0
         version: 5.89.0(react@19.1.1)
+      '@tanstack/react-table':
+        specifier: ^8.21.3
+        version: 8.21.3(react-dom@19.1.1)(react@19.1.1)
       '@tiptap/extension-code-block-lowlight':
         specifier: ^3.5.0
         version: 3.5.0(@tiptap/core@3.7.2)(@tiptap/extension-code-block@3.7.2)(@tiptap/pm@3.5.0)(highlight.js@11.11.1)(lowlight@3.3.0)
@@ -2494,6 +2497,18 @@ packages:
       react: 19.1.1
     dev: false
 
+  /@tanstack/react-table@8.21.3(react-dom@19.1.1)(react@19.1.1):
+    resolution: {integrity: sha512-5nNMTSETP4ykGegmVkhjcS8tTLW6Vl4axfEGQN3v0zdHYbK4UfoqfPChclTrJ4EoK9QynqAu9oUf8VEmrpZ5Ww==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      '@tanstack/table-core': 8.21.3
+      react: 19.1.1
+      react-dom: 19.1.1(react@19.1.1)
+    dev: false
+
   /@tanstack/react-virtual@3.13.12(react-dom@19.1.1)(react@19.1.1):
     resolution: {integrity: sha512-Gd13QdxPSukP8ZrkbgS2RwoZseTTbQPLnQEn7HY/rqtM+8Zt95f7xKC7N0EsKs7aoz0WzZ+fditZux+F8EzYxA==}
     peerDependencies:
@@ -2503,6 +2518,11 @@ packages:
       '@tanstack/virtual-core': 3.13.12
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
+    dev: false
+
+  /@tanstack/table-core@8.21.3:
+    resolution: {integrity: sha512-ldZXEhOBb8Is7xLs01fR3YEc3DERiz5silj8tnGkFZytt1abEvl/GhUmCE0PMLaMPTa3Jk4HbKmRlHmu+gCftg==}
+    engines: {node: '>=12'}
     dev: false
 
   /@tanstack/virtual-core@3.13.12:

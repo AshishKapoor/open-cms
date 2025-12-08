@@ -66,7 +66,7 @@ const PostDetail: React.FC = () => {
   return (
     <div className="bg-white">
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-8xl mx-auto">
           {/* Back Button */}
           <div className="mb-8">
             <Link
@@ -95,11 +95,10 @@ const PostDetail: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <Avatar
                     src={post.author.avatar}
-                    alt={`${
-                      post.author.firstName && post.author.lastName
-                        ? `${post.author.firstName} ${post.author.lastName}`
-                        : post.author.username
-                    } avatar`}
+                    alt={`${post.author.firstName && post.author.lastName
+                      ? `${post.author.firstName} ${post.author.lastName}`
+                      : post.author.username
+                      } avatar`}
                     size="lg"
                   />
                   <div>
@@ -150,11 +149,10 @@ const PostDetail: React.FC = () => {
             <div className="flex items-start space-x-4">
               <Avatar
                 src={post.author.avatar}
-                alt={`${
-                  post.author.firstName && post.author.lastName
-                    ? `${post.author.firstName} ${post.author.lastName}`
-                    : post.author.username
-                } avatar`}
+                alt={`${post.author.firstName && post.author.lastName
+                  ? `${post.author.firstName} ${post.author.lastName}`
+                  : post.author.username
+                  } avatar`}
                 size="xl"
                 className="flex-shrink-0"
               />

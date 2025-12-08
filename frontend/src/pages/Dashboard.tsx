@@ -5,6 +5,7 @@ import { postsAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import NewsletterSubscribersTable from "../components/NewsletterSubscribersTable";
 import TagsManagement from "../components/TagsManagement";
+import UsersManagement from "./UsersManagement";
 import {
   Plus,
   Edit,
@@ -15,6 +16,7 @@ import {
   FileText,
   Mail,
   Tag,
+  Users,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { formatRelativeTimeFromUtc } from "../lib/dateUtils";
@@ -150,11 +152,10 @@ const Dashboard: React.FC = () => {
             <nav className="-mb-px flex space-x-8">
               <button
                 onClick={() => handleTabChange("posts")}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === "posts"
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === "posts"
                     ? "border-blue-500 text-blue-600"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
+                  }`}
               >
                 <div className="flex items-center space-x-2">
                   <FileText className="h-4 w-4" />
@@ -163,11 +164,10 @@ const Dashboard: React.FC = () => {
               </button>
               <button
                 onClick={() => handleTabChange("tags")}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === "tags"
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === "tags"
                     ? "border-blue-500 text-blue-600"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
+                  }`}
               >
                 <div className="flex items-center space-x-2">
                   <Tag className="h-4 w-4" />
@@ -176,15 +176,26 @@ const Dashboard: React.FC = () => {
               </button>
               <button
                 onClick={() => handleTabChange("newsletter")}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === "newsletter"
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === "newsletter"
                     ? "border-blue-500 text-blue-600"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
+                  }`}
               >
                 <div className="flex items-center space-x-2">
                   <Mail className="h-4 w-4" />
                   <span>Newsletter</span>
+                </div>
+              </button>
+              <button
+                onClick={() => handleTabChange("users")}
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === "users"
+                    ? "border-blue-500 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <Users className="h-4 w-4" />
+                  <span>Users</span>
                 </div>
               </button>
             </nav>
@@ -288,11 +299,10 @@ const Dashboard: React.FC = () => {
                             {post.title}
                           </h3>
                           <span
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              post.published
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${post.published
                                 ? "bg-green-100 text-green-800"
                                 : "bg-orange-100 text-orange-800"
-                            }`}
+                              }`}
                           >
                             {post.published ? "Published" : "Draft"}
                           </span>
@@ -400,11 +410,10 @@ const Dashboard: React.FC = () => {
                             <button
                               key={pageNumber}
                               onClick={() => setCurrentPage(pageNumber)}
-                              className={`px-3 py-2 text-sm font-medium rounded-md ${
-                                pageNumber === pagination.page
+                              className={`px-3 py-2 text-sm font-medium rounded-md ${pageNumber === pagination.page
                                   ? "bg-blue-600 text-white"
                                   : "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50"
-                              }`}
+                                }`}
                             >
                               {pageNumber}
                             </button>
@@ -432,6 +441,9 @@ const Dashboard: React.FC = () => {
       ) : activeTab === "tags" ? (
         /* Tags Tab */
         <TagsManagement />
+      ) : activeTab === "users" ? (
+        /* Users Tab */
+        <UsersManagement />
       ) : null}
 
       {/* Delete Confirmation Modal */}

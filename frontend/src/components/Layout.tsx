@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useZenMode } from "../context/ZenModeContext";
 import Avatar from "./Avatar";
-import UserManagement from "./UserManagement";
 import NewsletterSubscriptionForm from "./NewsletterSubscriptionForm";
 import {
   LogOut,
@@ -27,7 +26,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [isUserManagementOpen, setIsUserManagementOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   // Close user menu when clicking outside
@@ -134,7 +132,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         </Link>
 
                         <button
-                          onClick={() => setIsUserManagementOpen(true)}
+                          onClick={() => navigate("/dashboard?tab=users")}
                           className="group flex items-center space-x-2 px-4 py-3 rounded-xl text-gray-600 hover:text-primary-600 hover:bg-primary-50/50 transition-all duration-200 relative"
                         >
                           <Users className="h-5 w-5 transition-transform duration-200 group-hover:scale-110" />
@@ -276,7 +274,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         <>
                           <button
                             onClick={() => {
-                              setIsUserManagementOpen(true);
+                              navigate("/dashboard?tab=users");
                               setIsMobileMenuOpen(false);
                             }}
                             className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:text-primary-600 hover:bg-primary-50/50 transition-all duration-200"
@@ -395,12 +393,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         </footer>
       )}
-
-      {/* User Management Modal */}
-      <UserManagement
-        isOpen={isUserManagementOpen}
-        onClose={() => setIsUserManagementOpen(false)}
-      />
     </div>
   );
 };
